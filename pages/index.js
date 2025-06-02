@@ -15,11 +15,31 @@ export default function Home() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await fetch("/api/price");
+        const apiKey = localStorage.getItem("API_KEY");
+        const secretKey = localStorage.getItem("SECRET_KEY");
+
+        if (!apiKey || !secretKey) {
+          console.warn("API veya Secret Key eksik!");
+          return;
+        }
+
+        const res = await fetch("/api/price", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ apiKey, secretKey }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Fiyat alınamadı");
+        }
+
         const data = await res.json();
         setCurrentPrice(data.currentPrice);
       } catch (err) {
-        console.error("Fiyat alınamadı:", err);
+        console.error("Fiyat alınamadı:", err.message);
         addLog("⚠️ Fiyat alınırken hata oluştu.");
       }
     };
@@ -43,12 +63,33 @@ export default function Home() {
   useEffect(() => {
     const fetchBalances = async () => {
       try {
-        const res = await fetch("/api/balance");
+        const apiKey = localStorage.getItem("API_KEY");
+        const secretKey = localStorage.getItem("SECRET_KEY");
+
+        if (!apiKey || !secretKey) {
+          console.warn("API veya Secret Key eksik!");
+          return;
+        }
+
+        const res = await fetch("/api/balance", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ apiKey, secretKey }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Bilinmeyen hata");
+        }
+
         const data = await res.json();
+
         setBtcBalance(data.BTC);
         setUsdtBalance(data.USDT);
       } catch (error) {
-        console.error("Balance fetch error:", error);
+        console.error("Balance fetch error:", error.message);
         addLog("⚠️ Bakiye alınırken hata oluştu.");
       }
     };
@@ -68,6 +109,15 @@ export default function Home() {
     addLog("🚀 Bot başlatılıyor...");
 
     try {
+      const apiKey = localStorage.getItem("API_KEY");
+      const secretKey = localStorage.getItem("SECRET_KEY");
+
+      if (!apiKey || !secretKey) {
+        setMessage("API bilgileri eksik.");
+        addLog("❌ API bilgileri bulunamadı.");
+        return;
+      }
+
       const res = await fetch("/api/start-bot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -75,6 +125,8 @@ export default function Home() {
           entryPrice: parseFloat(entryPrice),
           profitTarget: parseFloat(profitTarget),
           tradeAmount: parseFloat(tradeAmount),
+          apiKey,
+          secretKey,
         }),
       });
 
