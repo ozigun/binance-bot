@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../styles/homepage.css";
+import "../styles/homepage.module.css";
 
 export default function Home() {
   const [entryPrice, setEntryPrice] = useState("");

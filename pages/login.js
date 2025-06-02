@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import "../styles/login.css";
+import "../styles/login.module.css";
 
 export default function Login() {
   const [apiKey, setApiKey] = useState("");
