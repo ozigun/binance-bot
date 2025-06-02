@@ -1,4 +1,4 @@
-import Binance from "node-binance-api";
+import { Spot } from "@binance/connector";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -14,17 +14,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const binance = new Binance().options({
-      APIKEY: apiKey,
-      APISECRET: secretKey,
-    });
+    const client = new Spot(apiKey, secretKey);
 
-    const prices = await binance.prices("BTCUSDT");
-    const currentPrice = parseFloat(prices.BTCUSDT);
+    // BTCUSDT fiyatını al
+    const { data } = await client.tickerPrice("BTCUSDT");
 
-    res.status(200).json({ currentPrice });
+    const currentPrice = parseFloat(data.price);
+
+    return res.status(200).json({ currentPrice });
   } catch (error) {
     console.error("Fiyat alınamadı:", error);
-    res.status(500).json({ error: "Fiyat alınamadı" });
+    return res.status(500).json({ error: "Fiyat alınamadı" });
   }
 }
