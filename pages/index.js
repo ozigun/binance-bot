@@ -15,6 +15,8 @@ export default function Home() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
+        if (typeof window === "undefined") return;
+
         const apiKey = localStorage.getItem("API_KEY");
         const secretKey = localStorage.getItem("SECRET_KEY");
 
@@ -50,19 +52,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const apiKey = localStorage.getItem("API_KEY");
     const secretKey = localStorage.getItem("SECRET_KEY");
 
     if (!apiKey || !secretKey) {
       window.location.href = "/login"; // Eğer giriş yapılmamışsa login'e yönlendir
     }
-
-    // API'ye bu key'lerle istek yapacaksan headers'a veya body'e ekle
   }, []);
 
   useEffect(() => {
     const fetchBalances = async () => {
       try {
+        if (typeof window === "undefined") return;
+
         const apiKey = localStorage.getItem("API_KEY");
         const secretKey = localStorage.getItem("SECRET_KEY");
 
@@ -109,6 +113,8 @@ export default function Home() {
     addLog("🚀 Bot başlatılıyor...");
 
     try {
+      if (typeof window === "undefined") return;
+
       const apiKey = localStorage.getItem("API_KEY");
       const secretKey = localStorage.getItem("SECRET_KEY");
 
@@ -133,7 +139,6 @@ export default function Home() {
       const data = await res.json();
       setMessage(data.message || "Bot çalışıyor...");
 
-      // ✅ İşlem bilgisi varsa logla
       if (data.type === "buy" || data.type === "sell") {
         const emoji = data.type === "buy" ? "🟢 ALIM" : "🔴 SATIM";
         addLog(

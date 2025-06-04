@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import "../styles/login.module.css";
 
 export default function Login() {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
   const router = useRouter();
 
   const handleSubmit = (e) => {
@@ -20,6 +21,24 @@ export default function Login() {
 
     router.push("/");
   };
+
+  useEffect(() => {
+    async function fetchIP() {
+      const hostname = window.location.hostname;
+      try {
+        const res = await fetch(
+          `https://dns.google/resolve?name=${hostname}&type=A`
+        );
+        const data = await res.json();
+        const ip = data.Answer?.find((ans) => ans.type === 1)?.data;
+        if (ip) setIpAddress(ip);
+      } catch (err) {
+        console.error("IP alınamadı:", err);
+      }
+    }
+
+    fetchIP();
+  }, []);
 
   return (
     <div className="login-container">
@@ -46,6 +65,9 @@ export default function Login() {
         <button type="submit" className="full-width-field button-primary">
           Giriş Yap
         </button>
+        <p style={{ marginTop: "1rem", textAlign: "center" }}>
+          Yayın yapan IP: {ipAddress || "Yükleniyor..."}
+        </p>
       </form>
     </div>
   );
